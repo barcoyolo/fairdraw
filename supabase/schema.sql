@@ -28,10 +28,33 @@ create table if not exists public.events (
   created_at timestamptz not null default now()
 );
 
-create type registration_source as enum ('preregistration', 'live', 'representative_entry');
-create type attendance_status as enum ('yes', 'no', 'not_sure');
-create type eligibility_status as enum ('valid', 'duplicate', 'rejected', 'pending');
-create type result_type as enum ('winner', 'alternate');
+do $$
+begin
+  create type registration_source as enum ('preregistration', 'live', 'representative_entry');
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  create type attendance_status as enum ('yes', 'no', 'not_sure');
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  create type eligibility_status as enum ('valid', 'duplicate', 'rejected', 'pending');
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$
+begin
+  create type result_type as enum ('winner', 'alternate');
+exception
+  when duplicate_object then null;
+end $$;
 
 create table if not exists public.representatives (
   id uuid primary key default gen_random_uuid(),
@@ -87,6 +110,15 @@ alter table public.representatives enable row level security;
 alter table public.draw_results enable row level security;
 alter table public.audit_logs enable row level security;
 alter table public.admins enable row level security;
+
+drop policy if exists "public can read events" on public.events;
+drop policy if exists "public can read draw results" on public.draw_results;
+drop policy if exists "public can create participants when unlocked" on public.participants;
+drop policy if exists "admins manage events" on public.events;
+drop policy if exists "admins manage participants" on public.participants;
+drop policy if exists "admins manage representatives" on public.representatives;
+drop policy if exists "admins manage results" on public.draw_results;
+drop policy if exists "admins read audit logs" on public.audit_logs;
 
 create policy "public can read events" on public.events for select using (true);
 create policy "public can read draw results" on public.draw_results for select using (true);

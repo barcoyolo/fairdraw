@@ -12,6 +12,7 @@ import { summarizeStats } from "@/lib/utils";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const allowDemoMode = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ENABLE_DEMO === "true";
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && (anonKey || serviceKey));
 
@@ -29,7 +30,10 @@ export function getSupabaseBrowser() {
 
 export async function getEventBundle(slug: string): Promise<PublicEventBundle | null> {
   const supabase = getSupabaseAdmin();
-  if (!supabase) return slug === demoBundle.event.public_slug ? demoBundle : demoBundle;
+  if (!supabase) {
+    if (allowDemoMode) return slug === demoBundle.event.public_slug ? demoBundle : demoBundle;
+    return null;
+  }
 
   const { data: event, error } = await supabase
     .from("events")
