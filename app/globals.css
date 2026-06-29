@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  background: #f7f4ec;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    linear-gradient(180deg, rgba(223, 244, 236, 0.7), rgba(247, 244, 236, 0) 360px),
+    #f7f4ec;
+  color: #17211c;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.field {
+  @apply w-full rounded-md border border-civic-line bg-white px-3 py-2 text-sm outline-none transition focus:border-civic-pine focus:ring-2 focus:ring-civic-pine/20;
+}
+
+.label {
+  @apply text-sm font-semibold text-civic-ink;
+}
+
+.panel {
+  @apply rounded-lg border border-civic-line bg-white shadow-civic;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-md bg-civic-pine px-4 py-2 text-sm font-semibold text-white transition hover:bg-civic-ink disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-md border border-civic-line bg-white px-4 py-2 text-sm font-semibold text-civic-ink transition hover:border-civic-pine;
+}
+
+.stat-number {
+  font-variant-numeric: tabular-nums;
+}
