@@ -17,8 +17,9 @@ const allowDemoMode = process.env.NODE_ENV !== "production" || process.env.NEXT_
 export const isSupabaseConfigured = Boolean(supabaseUrl && (anonKey || serviceKey));
 
 export function getSupabaseAdmin() {
-  if (!supabaseUrl || !serviceKey) return null;
-  return createClient(supabaseUrl, serviceKey, {
+  const serverKey = serviceKey || anonKey;
+  if (!supabaseUrl || !serverKey) return null;
+  return createClient(supabaseUrl, serverKey, {
     auth: { autoRefreshToken: false, persistSession: false }
   });
 }

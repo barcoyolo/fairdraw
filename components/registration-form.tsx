@@ -9,9 +9,11 @@ export function RegistrationForm({ eventSlug, source }: { eventSlug: string; sou
   const [entryNumber, setEntryNumber] = useState<number | null>(null);
   const [message, setMessage] = useState("");
 
-  async function submit(formData: FormData) {
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setStatus("loading");
     setMessage("");
+    const formData = new FormData(event.currentTarget);
 
     const payload = {
       full_name: String(formData.get("full_name") ?? ""),
@@ -23,21 +25,26 @@ export function RegistrationForm({ eventSlug, source }: { eventSlug: string; sou
       consent: formData.get("consent") === "on"
     };
 
-    const response = await fetch(`/api/events/${eventSlug}/register`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const response = await fetch(`/api/events/${eventSlug}/register`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-    const data = await response.json();
-    if (!response.ok) {
+      const data = await response.json();
+      if (!response.ok) {
+        setStatus("error");
+        setMessage(data.error ?? "Registration could not be completed.");
+        return;
+      }
+
+      setEntryNumber(data.entry_number);
+      setStatus("success");
+    } catch {
       setStatus("error");
-      setMessage(data.error ?? "Registration could not be completed.");
-      return;
+      setMessage("Registration could not be completed. Please check your connection and try again.");
     }
-
-    setEntryNumber(data.entry_number);
-    setStatus("success");
   }
 
   if (status === "success") {
@@ -52,7 +59,7 @@ export function RegistrationForm({ eventSlug, source }: { eventSlug: string; sou
   }
 
   return (
-    <form action={submit} className="panel grid gap-4 p-5">
+    <form onSubmit={submit} className="panel grid gap-4 p-5">
       <label className="grid gap-2">
         <span className="label">Full name</span>
         <input className="field" name="full_name" required autoComplete="name" />

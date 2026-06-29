@@ -119,6 +119,13 @@ drop policy if exists "admins manage participants" on public.participants;
 drop policy if exists "admins manage representatives" on public.representatives;
 drop policy if exists "admins manage results" on public.draw_results;
 drop policy if exists "admins read audit logs" on public.audit_logs;
+drop policy if exists "prototype public can read participants" on public.participants;
+drop policy if exists "prototype public can read representatives" on public.representatives;
+drop policy if exists "prototype public can manage events" on public.events;
+drop policy if exists "prototype public can manage participants" on public.participants;
+drop policy if exists "prototype public can manage representatives" on public.representatives;
+drop policy if exists "prototype public can manage results" on public.draw_results;
+drop policy if exists "prototype public can create audit logs" on public.audit_logs;
 
 create policy "public can read events" on public.events for select using (true);
 create policy "public can read draw results" on public.draw_results for select using (true);
@@ -135,3 +142,13 @@ create policy "admins manage participants" on public.participants for all using 
 create policy "admins manage representatives" on public.representatives for all using (auth.uid() in (select id from public.admins));
 create policy "admins manage results" on public.draw_results for all using (auth.uid() in (select id from public.admins));
 create policy "admins read audit logs" on public.audit_logs for select using (auth.uid() in (select id from public.admins));
+
+-- Prototype access for the current unauthenticated admin UI.
+-- Replace these with authenticated admin policies before production use.
+create policy "prototype public can read participants" on public.participants for select using (true);
+create policy "prototype public can read representatives" on public.representatives for select using (true);
+create policy "prototype public can manage events" on public.events for all using (true) with check (true);
+create policy "prototype public can manage participants" on public.participants for all using (true) with check (true);
+create policy "prototype public can manage representatives" on public.representatives for all using (true) with check (true);
+create policy "prototype public can manage results" on public.draw_results for all using (true) with check (true);
+create policy "prototype public can create audit logs" on public.audit_logs for insert with check (true);
